@@ -1,0 +1,81 @@
+description: Centralised Attachment of Earnings Payment System (CAPS) {
+  shape: text
+  style: {
+    font-size: 11
+  }
+}
+
+HMCTS(CGI).shape: person
+
+
+Maintenance: CAPS_M_YYYYMMDD_000000_logical_sequence_number.xml {
+}
+Maintenance.shape: document
+
+Judgement: CAPS_J_YYYYMMDD_000000_logical_sequence_number.xml {
+}
+Judgement.shape: document
+
+
+HMCTS(CGI) -> Maintenance
+HMCTS(CGI) -> Judgement
+
+Location: V:/\MO_Transfers/\TK_In_MOJ/\CAPS
+Location.shape: package
+
+Maintenance -> Location: Daily, approx 09:30 - SFTP
+Judgement -> Location: Wednesdays, approx 09:30 - SFTP
+
+Automated_Process: Caps Payment Solution {
+  description: "Validate for\: - next logical sequence no. in file name \n- match XML schema \n- Each file starts with next expected invoice number" {
+    shape: text
+    style: {
+      font-size: 11
+    }
+  }
+  v_FileValidation.shape: Diamond
+}
+
+Location -> Automated_Process: 11:00
+
+Processed: D:/\Production/\CAPS/\Received Files/\Complete
+Processed.shape: package
+
+Email - Journal and Control Header.shape: document
+Email - No\. out of seq.shape: document
+
+Automated_Process -> Processed
+Automated_Process.v_FileValidation -> Email - Journal and Control Header: pass
+Automated_Process.v_FileValidation -> Email - No\. out of seq: Error
+
+LIB-ARk-SQL-11 {
+  CAPS Data Management.shape: cylinder 
+  CAPS Data Management{
+    tbl_CAPSTracker
+    tbl_MPOFileTracker
+  }
+
+  Logs.shape: cylinder 
+  Logs {
+    tbl_CAPSFileTracker
+  }
+}
+
+Automated_Process  ->  LIB-ARk-SQL-11.CAPS Data Management
+Automated_Process  ->  LIB-ARk-SQL-11.Logs
+
+Accurate: {
+  Workflow 'Manual Payable Orders'.shape: cylinder
+  Z\:/\Manual Payable Orders/\BACS Output Files {
+    description: "If BACs payments exist"{
+      shape: text
+      style: {
+        font-size: 8
+      }
+    }
+  }
+}
+
+Processed -> Accurate.Workflow 'Manual Payable Orders'
+
+

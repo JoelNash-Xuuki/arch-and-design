@@ -1,0 +1,126 @@
+Artist.shape: person
+Artist -> host.cli: login
+
+Storage.shape: cloud
+Storage {
+  vdrive\:Source\/Projects\/\<dir\>  
+}
+
+host {
+  cli {
+
+ 
+    \/data\/ {
+      \/videos/
+    }
+ 
+    project {
+      Sound Arch {
+        style.stroke-dash: 3
+        \.ly   
+      }
+      
+      Sound Design {
+        style.stroke-dash: 3
+        \.orc
+        \.sco
+      }
+
+      prod {
+        style.stroke-dash: 3
+        mix\.eca
+        mix\.csd
+      }
+
+      movies {
+        \.mp4.style.fill: "#FFFF00"
+        \.mp4.shape: document
+      }
+
+      stills {
+
+      }
+
+      mix {
+        \.wav.style.fill: "#FFFF00" 
+        \.wav.shape: document
+      }
+    
+      stems {
+        \.wav.style.multiple: true
+      }
+      
+      tmp\/ {
+        \.mid
+        \.srt
+        \.csv
+        \.pdf.style.fill: "#FFFF00"
+      }
+    }
+
+    tools {
+      lilygen.style.fill: "#FFA500"
+      style.stroke-dash: 3
+      midicsv.style.fill: "#00ff00" 
+      test editor.style.fill: "#00ff00"
+      modsyn.style.fill: "#FFA500" 
+      midi-csv-to-srt-a\.py.style.fill: "#FFA500"
+      csound.style.fill: "#00ff00" 
+      ffmpeg.style.fill: "#00ff00"
+      rclone copy \<dir\> vdrive\:Source\/Projects\/\<dir\>.style.fill: "#00ff00" 
+      rclone copy vdrive\:Source\/Projects\/\<dir\> \<dir\>.style.fill: "#00ff00" 
+
+      lilypond.style.fill: "#00ff00" 
+      nginx.style.fill: "#00ff00"
+      
+    }
+
+
+    lilypond -dmidi-extension=mid file\.ly
+    ffmpeg -loop  1 -i stills\/result-blur\.jpg -i mix\/track\.wav -vf \"subtitles=Track\.srt\:force_style=\'MarginV=140,PrimaryColour=\&H00FFFF00\'\" -preset fast -crf 23 -shortest \/data\/video\/output\.mp4
+    csound -d -o \"stems/\.wav\" -F \.mid  \.orc \.sco
+
+  }
+
+
+}
+
+
+host.cli.tools.lilygen -> host.cli.project.Sound Arch {
+  style.stroke: "#FFA500"
+}
+
+
+host.cli.project.prod.mix\.eca -> host.audio out: ./mix.eca
+host.audio out -> Artist
+host.cli.tools.text editor -> host.cli.project.prod: create / modify files
+host.cli.tools.lilypond -> host.cli.lilypond -dmidi-extension=mid file\.ly
+host.cli.lilypond -dmidi-extension=mid file\.ly -> host.cli.project.tmp\/.\.mid 
+host.cli.lilypond -dmidi-extension=mid file\.ly -> host.cli.project.tmp\/.\.pdf
+host.cli.tools.text editor -> host.cli.project.Sound Design
+host.cli.project.Sound Design.\.orc -> host.cli.tools.csound  
+host.cli.project.Sound Design.\.sco -> host.cli.tools.csound
+
+host.cli.project.tmp\/.\.mid -> host.cli.project.Sound Design.\.sco 
+# host.cli.project.tmp\/.\.mid -> host.cli.project.Sound Design.\.orc: written into 
+
+host.cli.tools.ffmpeg -> host.cli.ffmpeg -loop  1 -i stills\/result-blur\.jpg -i mix\/track\.wav -vf \"subtitles=Track\.srt\:force_style=\'MarginV=140,PrimaryColour=\&H00FFFF00\'\" -preset fast -crf 23 -shortest \/data\/video\/output\.mp4
+host.cli.ffmpeg -loop  1 -i stills\/result-blur\.jpg -i mix\/track\.wav -vf \"subtitles=Track\.srt\:force_style=\'MarginV=140,PrimaryColour=\&H00FFFF00\'\" -preset fast -crf 23 -shortest \/data\/video\/output\.mp4 -> host.cli.project.movies.\.mp4
+
+host.cli.tools.csound -> host.cli.csound -d -o \"stems/\.wav\" -F \.mid  \.orc \.orc: written into
+host.cli.csound -d -o \"stems/\.wav\" -F \.mid  \.orc \.sco -> host.cli.project.stems
+host.cli.project.stems -> host.cli.project.prod 
+host.cli.project.movies.\.mp4 -> host.cli.\/data\/: mv
+
+
+# Upload
+host.cli.tools.rclone copy \<dir\> vdrive\:Source\/Projects\/\<dir\> -> Storage.vdrive\:Source\/Projects\/\<dir\>: Copy file(s) from dir to dest
+# Download
+host.cli.tools.rclone copy vdrive\:Source\/Projects\/\<dir\> \<dir\> <- Storage.vdrive\:Source\/Projects\/\<dir\>: Copy file(s) from dir to dest
+
+
+
+
+# host.cli.tools.rclone copy \<dir\> vdrive\:Source\/Projects\/\<dir\>: will write modfied files (create dirs if it contains file)
+
+

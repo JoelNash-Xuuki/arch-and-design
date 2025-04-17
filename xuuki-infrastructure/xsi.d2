@@ -1,0 +1,112 @@
+Network {
+  OS {
+    192\.168\.1\.220 {
+      root passwd weak atm.shape: person
+      root passwd weak atm
+      Admin User (non root sudo).shape: person
+      Admin User (non root sudo)
+      Reverse Proxy (nginx)
+      Admin User (non root sudo) -> tty/pty
+      /home/admin user/ -> firewall.service
+      /home/admin user/ {
+        \.git
+        Projects
+        \.ssh {
+          id_ed25519 (private key)
+          id_ed25519\.pub (public key)
+          authorized_keys {
+            id_ed25519\.pub
+          } 
+          known_hosts {
+           host(s) {
+             ssh-ed25519
+             ssh-rsa
+             ecdsa-sha2-nistip256
+           }
+          }
+        }
+      }
+      tty/pty -> /home/admin user/
+      firewall {
+        service {
+          web api
+          database
+        }
+      }
+      Reverse Proxy (nginx) -> firewall.service
+    }
+  }
+}
+
+epik (xuuki\.xyz) {
+  vultr-cloud-1.shape: cloud
+  vultr-cloud-1 {
+    mail server  
+  }
+
+  vultr-cloud-2.shape: cloud
+  vultr-cloud-2 {
+    Reverse Proxy (nginx)
+    firewall { 
+      service {
+        web api
+        database
+      }
+    }
+  }
+}
+
+Body -> device: enter pin
+
+device {
+  bitwarden {
+    bluemail -> new-account: confirm
+    account
+  }
+  browser
+  Termux
+}
+
+device.Termux -> device.bitwarden.account: get ssh key pair
+
+device.bitwarden.bluemail -> epik (xuuki\.xyz).vultr-cloud-1.mail server
+device.Termux -> RubyGems Registry
+
+direction: up
+
+Body.shape: person
+Body {
+  master password
+}
+
+Github.shape: cloud
+RubyGems Registry.shape: cloud
+
+
+GDrive.shape: cloud
+GDrive {
+  Source
+  Archive
+}
+
+device -> GDrive
+device -> Github
+
+Lakeshore (network).Dev Env.192\.168\.1\.220./home/admin user/ <-> Docker Registry
+Lakeshore (network).Dev Env.192\.168\.1\.220./home/admin user/ <-> GDrive
+Lakeshore (network).Dev Env.192\.168\.1\.220./home/admin user/ <-> RubyGems Registry
+
+
+
+
+Lakeshore (network).Dev Env.192\.168\.1\.220./home/admin user/ <-> Github
+
+device.browser -> Lakeshore (network).Dev Env.192\.168\.1\.220.Reverse Proxy (nginx): http(s) request
+
+device.Termux -> Lakeshore (network).Dev Env.192\.168\.1\.220.Admin User (non root sudo): login/ssh
+device.bitwarden.account -> epik (xuuki\.xyz).vultr-cloud-1.mail server: email user password
+Body -> device.bitwarden.account: enter master password
+
+Github.shape: cloud 
+Github
+

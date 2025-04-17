@@ -1,0 +1,40 @@
+description: IAC - reconciliation of casses going through the immigration nd asylum process {
+  shape: text
+  style: {
+    font-size: 11
+  }
+}
+
+# Entities
+HMCTS (CGI).shape: person
+aria
+Accurate: {
+ cashbook
+ statement
+ IFAS File(s).shape: document
+ data/\AIT_Output_Reports/\Oracle_interface.shape: package
+ payments match to case info?.shape:diamond
+
+}
+
+paymentinfo
+receipted cases extract.shape: document
+V\:/\MOS/\IAC/\IFAS uploads.shape: package
+MOJ accounting system
+
+# Relationships
+HMCTS (CGI) -> aria: Initial IAC case or case update transferred every evening
+
+aria -> Accurate.cashbook
+paymentinfo -> Accurate.statement: load every weekday
+
+Accurate.cashbook -> Accurate.payments match to case info?
+Accurate.statement -> Accurate.payments match to case info?
+
+Accurate.payments match to case info? -> receipted cases extract: yes
+receipted cases extract -> HMCTS (CGI): SFTP
+
+MOJ accounting system -> Accurate.IFAS File(s)
+Accurate.IFAS File(s) -> Accurate.data/\AIT_Output_Reports/\Oracle_interface
+
+Accurate.data/\AIT_Output_Reports/\Oracle_interface -> V\:/\MOS/\IAC/\IFAS uploads

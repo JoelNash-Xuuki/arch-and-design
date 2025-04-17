@@ -1,0 +1,41 @@
+# notes: {
+#   label: "### Notes\nTheres an item on statement side that comes from the file\n\nZ:\\HMCTS Online\\PreRec_Extract\\Done\\CardPreRec_to_GOVuk_20250403_20250403072036_20250403_072951.csv.\n\nIts on line 1196 - Provider ID 86518edc-da3b-4577-b743-de7857bfe721\n\nCouple more observations (that could mean something): the record of concern is the last row in the file.\n\nAlso, I think line 20 and 21 say 597 items have been loaded, which is nearly half (off by two) of the number of records in the file it loaded – perhaps this is a sign of the discrepancy?"
+#   style: {
+#     font-color: "#333333"
+#     fill: "#f9f9f9"
+#     stroke: "#cccccc"
+#   }
+# }
+
+description: PbA - Payment by Account (aka Fee Account) {
+  shape: text
+  style: {
+    font-size: 11
+  }
+}
+
+# Entities
+HMCTS.shape: person
+details data of customer fees owed.shape: document
+Accurate: {
+  Z\:/\data/\Fee Account/\Reconciliation Feed.shape: package
+  Z\:/\data/\Fee Account/\WF_Weekly_Payment_File.shape: package
+  Z\:/\data/\Fee Account/\WF_Monthly_Payment_File.shape: package
+  Middle Office Direct Debit workflow.shape: cylinder
+}
+
+V\:/\MOS/\Fee Account: {
+  Fee Account - Output Console\.xlsm
+}
+
+Customer Advance notice email.shape: document
+
+# Relationships
+HMCTS -> details data of customer fees owed
+details data of customer fees owed -> Accurate.Z\:/\data/\Fee Account/\Reconciliation Feed: daily
+Accurate.Z\:/\data/\Fee Account/\Reconciliation Feed -> Accurate.Middle Office Direct Debit workflow: create new cases
+Accurate.Middle Office Direct Debit workflow -> Accurate.Z\:/\data/\Fee Account/\WF_Weekly_Payment_File: Tuesday Morning
+Accurate.Middle Office Direct Debit workflow -> Accurate.Z\:/\data/\Fee Account/\WF_Monthly_Payment_File: 2nd working day of the month
+Accurate.Z\:/\data/\Fee Account/\WF_Weekly_Payment_File -> V\:/\MOS/\Fee Account.Fee Account - Output Console\.xlsm
+Accurate.Z\:/\data/\Fee Account/\WF_Monthly_Payment_File -> V\:/\MOS/\Fee Account.Fee Account - Output Console\.xlsm
+V\:/\MOS/\Fee Account.Fee Account - Output Console\.xlsm -> Customer Advance notice email: eveyday 15:50

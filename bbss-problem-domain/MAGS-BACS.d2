@@ -1,0 +1,63 @@
+description: MAGS BACS {
+  shape: text
+  style: {
+    font-size: 11
+  }
+}
+
+Mags BACS Upload Portal {
+  file is next sequencial no.shape: diamond
+}
+
+Courts.shape: person
+BACS Team.shape: person
+Courts -> Mags BACS Upload Portal.file is next sequencial no: File name, value and no. payments
+
+LIB-ARK-APP-07 {
+  cesservices.shape: cylinder
+  cesservices {
+    tbl_magsfilestore { 
+      Processed
+      ProcessedDate   
+    }
+  }
+}
+
+Mags BACS Upload Portal.file is next sequencial no -> LIB-ARK-APP-07.cesservices: yes
+
+BACS File.shape: document
+
+LIB-ARK-APP-07.cesservices -> BACS File: consolidated file 
+BACS File -> BACS Team: 12:05 daily
+
+SQL-11 {
+  MAGS BACS {
+    Day 2 Procedure 
+    Day 3 Procedure { 
+      description: 11:30 every weekday
+    }
+  }
+  accesspay\/Archive\/ {
+    DDMMYYYY_HHMMCOURTPO_MAGSYYYY_MM_DD\.dat
+  }
+}
+
+BACS File -> SQL-11.accesspay\/Archive\/.DDMMYYYY_HHMMCOURTPO_MAGSYYYY_MM_DD\.dat
+
+Developments, BPA (Mailbox) {
+  Magistrates BACS {
+    c - Consolidated BACS Header {
+      MAGS_BACS_HEADER_DD_MM_YYYY\.pdf.shape: document
+      MAGS_BACS_HEADER_DD_MM_YYYY\.pdf
+    }
+  } 
+}
+
+SQL-02 {
+
+}
+
+
+SQL-11 -> Developments, BPA (Mailbox).Magistrates BACS.c - Consolidated BACS Header
+
+V\:/\CES Outputs/\Automated BACS Output Files/\Rejection Payment Files.shape: package

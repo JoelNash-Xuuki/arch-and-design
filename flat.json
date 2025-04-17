@@ -1,0 +1,19 @@
+{
+  "rooms": [
+    {"name": "Living Room", "width": 500, "height": 400, "x": 50, "y": 50},
+    {"name": "Kitchen", "width": 500, "height": 400, "x": 50, "y": 450},
+    {"name": "Bathroom", "width": 300, "height": 400, "x": 50, "y": 850}
+  ],
+  "doors": [
+    {"x": 60, "y": 50, "width": 50, "angle": -90}
+  ],
+  "appliances": [
+    {"name": "Toilet", "x": 100, "y": 900},
+    {"name": "Fridge", "x": 50, "y": 500, "shape": "rect", "width": 60, "height": 80},
+    {"name": "Sink", "x": 100, "y": 700, "shape": "rect", "width": 50, "height": 40},
+    {"name": "Sink", "x": 170, "y": 850, "shape": "rect", "width": 50, "height": 40},
+    {"name": "Sofa", "x": 200, "y": 200, "shape": "rect", "width": 200, "height": 80},
+    {"name": "Workstation", "x": 200, "y": 280, "shape": "rect", "width": 150, "height": 60}
+  ]
+}
+

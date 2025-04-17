@@ -1,0 +1,97 @@
+description: BAR / BAR Master - CTSC - UKBA: Seeing the system's toplogy this way to support perception of how control flow and data dependencies interact {
+  shape: text
+  style: {
+    font-size: 11
+  }
+}
+
+Local banking and accounting excel doc {
+  description: is this the file the courts use to notify payments to be cheque or BACS\?{
+    shape: text
+    style: {
+      font-size: 11
+    }
+  }
+}
+
+Accurate: {
+  Reconciliation 'Courts Reconciliation','11111111'.shape: cylinder 
+  Workflow 'Manual Payable Orders'.shape: cylinder
+  Reconciliation 'Missing Daily Returns'.shape: cylinder 
+  Efiling Rec.shape: cylinder
+  Workflow UKBA.shape: cylinder
+  Reconcilation GOV UK.shape: cylinder
+  Z\:/\data/\HMCTS Online/\CTSC/\E-Filing_Feed.shape: package
+  Z\:/\data/\HMCTS Online/\CTSC/\Workflow_Feed.shape: package
+  Z\:/\data/\UKBA_File_Processing/\Failed.shape: package
+  Copy of HMCTS Online Data Feed - Refund API Card Feed
+  Z\:/\data/\HMCTS Online/\RefundAPI_Files.shape: package
+}
+
+refundcsv-v2-api -> Accurate.Z\:/\data/\HMCTS Online/\RefundAPI_Files
+Accurate.Z\:/\data/\HMCTS Online/\RefundAPI_Files -> Accurate.Copy of HMCTS Online Data Feed - Refund API Card Feed
+Accurate.Copy of HMCTS Online Data Feed - Refund API Card Feed -> Accurate.Efiling Rec: Load CardRefundDataYYYY-MM-HHHHSS.csv (cashbook)
+
+Ops -> refund-dashboard
+
+SQL-11: {
+  Host EpdqGovUkRefund Table PaymentRefunds.shape: cylinder
+}
+
+MOS2 - Forms Only /\ UKBA Cost Awards /\1 - Inbox.shape: package
+UKBA (HMCTS) -> MOS2 - Forms Only /\ UKBA Cost Awards /\1 - Inbox: request IAC cases charged in error so rewarded back.
+
+Temp SQL database.shape: cylinder
+MOS2 - Forms Only /\ UKBA Cost Awards /\1 - Inbox -> Temp SQL database
+
+D\:Production/\UKBAFileConversion/\database/\database\.\sqlite.shape: cylinder
+Temp SQL database -> D\:Production/\UKBAFileConversion/\database/\database\.\sqlite
+D\:Production/\UKBAFileConversion/\database/\database\.\sqlite -> etc
+
+etc -> Accurate.Workflow UKBA: validated transactions 
+Accurate.Workflow UKBA -> Ops: payment files
+Reform Refunds Extract.shape: document
+Accurate.Workflow UKBA -> reform refunds extract: saturday afternoons
+
+Reform Refunds Extract -> SQL-11.Host EpdqGovUkRefund Table PaymentRefunds
+SQL-11.Host EpdqGovUkRefund Table PaymentRefunds -> EpdqGovUkRefund API 
+EpdqGovUkRefund API -> Accurate.Reconcilation GOV UK
+Accurate.Reconcilation GOV UK -> Accurate.Efiling Rec
+
+BAR Master / BAR Master Daily Run
+
+local banking and accounting excel doc.shape: document
+
+court(s).shape: person
+court(s) -> local banking and accounting excel doc
+
+Inbox\/\.Awaiting Validation\/BAR\.Returns.shape: package
+
+CTSC -> Local banking and accounting excel doc: payment request for refund customers of reform service
+
+Inbox\/\.Awaiting Validation\/BAR\.Returns -> Ops: extract payment request
+
+Ops ->  Accurate.Z\:/\data/\HMCTS Online/\CTSC/\E-Filing_Feed
+Ops ->  Accurate.Z\:/\data/\HMCTS Online/\CTSC/\Workflow_Feed
+
+Accurate.Z\:/\data/\HMCTS Online/\CTSC/\E-Filing_Feed -> Accurate.Efiling Rec
+Accurate.Z\:/\data/\HMCTS Online/\CTSC/\Workflow_Feed -> Accurate.Workflow 'Manual Payable Orders'
+
+Local banking and accounting excel doc -> Inbox\/\.Awaiting Validation\/BAR\.Returns : daily
+
+V\:/\MOS/\BAR/\Courts/\GBS Returns/\Receipting.shape: package
+Z\:/\data/\daily_returns.shape: package
+Z\:/\data/\Manual Payable Orders File Processing.shape: package
+Z\:/\data/\Missing Daily Returns Rec Feed.shape: package
+
+Inbox\/\.Awaiting Validation\/BAR\.Returns -> BAR Master / BAR Master Daily Run: 12:10 every weekday
+
+BAR Master / BAR Master Daily Run -> V\:/\MOS/\BAR/\Courts/\GBS Returns/\Receipting  
+BAR Master / BAR Master Daily Run -> Z\:/\data/\daily_returns 
+BAR Master / BAR Master Daily Run -> Z\:/\data/\Manual Payable Orders File Processing
+BAR Master / BAR Master Daily Run -> Z\:/\data/\Missing Daily Returns Rec Feed
+
+V\:/\MOS/\BAR/\Courts/\GBS Returns/\Receipting -> 14\:15 AR Receipting Task (SQL-11)
+Z\:/\data/\daily_returns -> Accurate.Reconciliation 'Courts Reconciliation','11111111'
+Z\:/\data/\Missing Daily Returns Rec Feed -> Accurate.Reconciliation 'Missing Daily Returns'  
+Z\:/\data/\Manual Payable Orders File Processing -> Accurate.Workflow 'Manual Payable Orders'

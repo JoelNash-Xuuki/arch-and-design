@@ -1,0 +1,17 @@
+Using Docker containers for software development can be a practical   
+approach, but there are some considerations:                          
+
+ 1 Isolation: Containers provide process-level isolation, not full    
+   OS-level isolation like VMs. This means they share the host's      
+   kernel, which can be a limitation for certain tasks.               
+ 2 Persistence: Containers are ephemeral by nature. Ensure you mount  
+   volumes for persistent storage of your code and configurations.    
+ 3 Environment Consistency: Containers are great for maintaining      
+   consistent development environments across different machines.     
+ 4 Performance: Containers generally have less overhead compared to   
+   VMs, which can be beneficial for development.                      
+ 5 Tooling: Ensure your development tools and dependencies are        
+   compatible with running inside a container.                        
+
+If these considerations align with your needs, using Docker for       
+development can be effective.                                         

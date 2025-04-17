@@ -1,0 +1,89 @@
+description: Traffic Enforcement Service {
+  shape: text
+  style: {
+    font-size: 11
+  }
+}
+
+TEC.shape: person
+TEC Service -> BAR return
+Ops.shape: person
+Change request form.shape: document
+Change form Location: V:/\MOS/\BAR/\TEC/\Customer Change Forms
+Change form Location.shape: package
+SQL-11 {
+  Customer Change Form Processor (Task) {
+    TEC_Commander (sln)
+  }
+  Statement Generator (Task) {
+    D\:/\Production/\TEC/\TECReports\&Statements/\TEC_Reports\.exe-STATEMENTS
+  }
+  Balance Report
+  BAR Generation
+  Report Generator {
+    BBSS - CAPS \& TEC - Report Generator
+  }
+  C\:/\TEC_Reports/\Emails
+  C\:/\TEC_Reports/\Fax
+}
+
+SQL-11.Statement Generator (Task) -> SQL-11.C\:/\TEC_Reports/\Emails/\Done 
+SQL-11.Statement Generator (Task) -> SQL-11.C\:/\TEC_Reports/\Fax/\Done
+
+
+
+TEC -> Change request form: Submit form weekly
+Change request form -> Ops
+Ops -> Change form Location
+
+Change form Location -> SQL-11.Customer Change Form Processor (Task).TEC_Commander (sln): process
+
+Accurate {
+  Z\:/\data/\BAR/\TEC Customer Fees/\Data_Feed
+  15\:15 task
+  ARAMIS/\Middle Office AR/\BAR/\TEC Customer Fees/\Customer Fees (Reconciliation)
+  Z\:/\data/\BAR/\TEC Customer Fees/\Statement Extract
+  Feed Generator (Task)
+  10018859 Reconciliation
+  Primary Bank Rec Tasks - G - TEC Bank Statement Data Extract -> Z\:/\data/\TEC Statement_Data
+}
+
+Accurate.Z\:/\data/\TEC Statement_Data -> SQL-11.Report Generator.BBSS - CAPS \& TEC - Report Generator
+SQL-11.Report Generator.BBSS - CAPS \& TEC - Report Generator -> TEC Service: 07:30 email extract
+
+V drive {
+  MOS/\BAR/\TEC/\BAR Workbooks
+  MOS/\BAR/\TEC/\Statements/\Fax/\Done: {
+      style: {
+        stroke: "#ff0000"
+        fill: "#ff0000"
+      }
+  }
+}
+
+BAR return -> Accurate.Z\:/\data/\BAR/\TEC Customer Fees/\Data_Feed
+
+Accurate.Z\:/\data/\BAR/\TEC Customer Fees/\Data_Feed -> Accurate.15\:15 task: process bar return
+
+Accurate.15\:15 task -> Accurate.ARAMIS/\Middle Office AR/\BAR/\TEC Customer Fees/\Customer Fees (Reconiliation): load to rec
+
+Accurate.ARAMIS/\Middle Office AR/\BAR/\TEC Customer Fees/\Customer Fees (Reconiliation) -> Accurate.Z\:/\data/\BAR/\TEC Customer Fees/\Statement Extract: generate extract
+
+Accurate.Z\:/\data/\BAR/\TEC Customer Fees/\Statement Extract -> SQL-11.Statement Generator (Task) 
+
+TEC Customer(s).shape: person
+TEC Team.shape: person
+
+SQL-11.Statement Generator (Task)-> TEC Customer(s): daily Statement Report (email)
+
+SQL-11 -> TEC Team: all customer balances as at the end of each day (email)
+
+SQL-11.BAR Generation -> TEC Team: Friday Afternoons - send TEC BAR (updated version)
+
+SQL-11 -> V drive.MOS/\BAR/\TEC/\BAR Workbooks: processed TEC BAR
+
+V drive.MOS/\BAR/\TEC/\BAR Workbooks -> Accurate.Feed Generator (Task)
+
+Datalink files.shape: document
+
+Datalink files -> Accurate.10018859 Reconciliation: load statement side
