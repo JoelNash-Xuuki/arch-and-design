@@ -1,5 +1,4 @@
 Artist.shape: person
-Artist -> host.cli: login
 
 Storage.shape: cloud
 Storage {
@@ -8,8 +7,6 @@ Storage {
 
 host {
   cli {
-
- 
     \/data\/ {
       \/videos/
     }
@@ -32,6 +29,11 @@ host {
         mix\.csd
       }
 
+      processed.shape: package
+      proccessed {
+
+      }
+
       movies {
         \.mp4.style.fill: "#FFFF00"
         \.mp4.shape: document
@@ -40,7 +42,6 @@ host {
       stills {
 
       }
-
       mix {
         \.wav.style.fill: "#FFFF00" 
         \.wav.shape: document
@@ -79,17 +80,15 @@ host {
     lilypond -dmidi-extension=mid file\.ly
     ffmpeg -loop  1 -i stills\/result-blur\.jpg -i mix\/track\.wav -vf \"subtitles=Track\.srt\:force_style=\'MarginV=140,PrimaryColour=\&H00FFFF00\'\" -preset fast -crf 23 -shortest \/data\/video\/output\.mp4
     csound -d -o \"stems/\.wav\" -F \.mid  \.orc \.sco
-
   }
-
-
 }
 
+
+# Relationships
 
 host.cli.tools.lilygen -> host.cli.project.Sound Arch {
   style.stroke: "#FFA500"
 }
-
 
 host.cli.project.prod.mix\.eca -> host.audio out: ./mix.eca
 host.audio out -> Artist
@@ -111,6 +110,7 @@ host.cli.tools.csound -> host.cli.csound -d -o \"stems/\.wav\" -F \.mid  \.orc \
 host.cli.csound -d -o \"stems/\.wav\" -F \.mid  \.orc \.sco -> host.cli.project.stems
 host.cli.project.stems -> host.cli.project.prod 
 host.cli.project.movies.\.mp4 -> host.cli.\/data\/: mv
+Artist -> host.cli: login
 
 
 # Upload
@@ -118,9 +118,4 @@ host.cli.tools.rclone copy \<dir\> vdrive\:Source\/Projects\/\<dir\> -> Storage.
 # Download
 host.cli.tools.rclone copy vdrive\:Source\/Projects\/\<dir\> \<dir\> <- Storage.vdrive\:Source\/Projects\/\<dir\>: Copy file(s) from dir to dest
 
-
-
-
 # host.cli.tools.rclone copy \<dir\> vdrive\:Source\/Projects\/\<dir\>: will write modfied files (create dirs if it contains file)
-
-
